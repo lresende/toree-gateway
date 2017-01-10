@@ -47,7 +47,7 @@ class ToreeKernel(MetaKernel):
         args = [
             "java",
             "-classpath",
-            "/Users/bburns/toree_client/target/toree-client-0.1-jar-with-dependencies.jar",
+            "/opt/toree_proxy/lib/toree-client-0.1-jar-with-dependencies.jar",
             "com.ibm.ToreeClient"
         ]
 
