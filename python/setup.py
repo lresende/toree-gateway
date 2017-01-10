@@ -1,11 +1,11 @@
 from setuptools import setup
 
 
-setup(name='toree_kernel',
+setup(name='toree_proxy_kernel',
     version='0.1',
-    description='Toree Client Kernel',
+    description='Toree Client Proxy Kernel',
     long_description='A simple echo kernel for Jupyter/IPython, based on MetaKernel',
-    py_modules=['toree_kernel'],
+    py_modules=['toree_proxy_kernel'],
     install_requires=['metakernel', 'py4j'],
     classifiers = [
         'Framework :: IPython',

@@ -71,7 +71,7 @@ class ToreeKernel(MetaKernel):
     def Error(self, output):
         if not output:
             return
-        
+
         super(ToreeKernel, self).Error(output)
 
     def handle_output(self, fd, fn):

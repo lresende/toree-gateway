@@ -2,10 +2,10 @@
   "language_info": {
     "name": "scala"
   },
-  "display_name": "Toree Client Kernel",
+  "display_name": "Toree Client Proxy Kernel",
   "argv": [
     "python",
-    "/Users/bburns/toree_client/python/toree_kernel.py",
+    "/opt/toree_proxy/python/toree_proxy_kernel.py",
     "-f",
     "{connection_file}"
   ],
