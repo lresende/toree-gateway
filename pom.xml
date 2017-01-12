@@ -5,7 +5,7 @@
   <artifactId>toree-client</artifactId>
   <version>0.1</version>
 
-  <name>Toree Client</name>
+  <name>Toree Proxy Kernel</name>
 
   <build>
     <plugins>
