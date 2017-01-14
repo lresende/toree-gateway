@@ -13,6 +13,8 @@ import py4j.GatewayServer
 import scala.concurrent.{Await, Promise}
 import scala.concurrent.duration.Duration
 
+import org.slf4j.LoggerFactory
+
 class ToreeGateway(client: SparkKernelClient) {
   //  Define our callback
   def printResult(result: ExecuteResult) = {
@@ -31,6 +33,7 @@ class ToreeGateway(client: SparkKernelClient) {
 
 object ToreeClient extends App {
 
+  final val log = LoggerFactory.getLogger(this.getClass.getName.stripSuffix("$"))
 
   def getConfigurationFilePath: String = {
     var filePath = "/opt/toree_proxy/conf/profile.json"
@@ -46,8 +49,19 @@ object ToreeClient extends App {
     filePath
   }
 
+  log.info("Application Initialized from " + new java.io.File(".").getCanonicalPath)
+  log.info("With the following parameters:" )
+  if (args.length == 0 ) {
+    log.info(">>> NONE" )
+  } else {
+    for (arg <- args) {
+      log.info(">>> Arg :" + arg )
+    }
+  }
+
   // Parse our configuration and create a client connecting to our kernel
   val configFileContent = scala.io.Source.fromFile(getConfigurationFilePath).mkString
+  log.info(">>> Configuration in use " + configFileContent)
   val config: Config = ConfigFactory.parseString(configFileContent)
 
   val client = (new ClientBootstrap(config)
@@ -55,13 +69,6 @@ object ToreeClient extends App {
     with StandardHandlerInitialization).createClient()
 
   val toreeGateway = new ToreeGateway(client)
-  /*
-  val code: String =
-    """
-      |sc.parallelize(List(1,2,3,4,5)).reduce((a, b) => a + b)
-    """.stripMargin
-  print(toreeGateway.eval(args(0)))
-  */
 
   val gatewayServer: GatewayServer = new GatewayServer(toreeGateway)
   gatewayServer.start()
