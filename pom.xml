@@ -31,6 +31,11 @@
       <artifactId>py4j</artifactId>
       <version>0.10.3</version>
     </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <version>1.7.5</version>
+    </dependency>
   </dependencies>
 
   <build>
