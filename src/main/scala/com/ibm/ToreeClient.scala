@@ -31,22 +31,24 @@ class ToreeGateway(client: SparkKernelClient) {
 
 object ToreeClient extends App {
 
-  val profileJSON: String = """
-{
-    "stdin_port":   48691,
-    "control_port": 44808,
-    "hb_port":      49691,
-    "shell_port":   40544,
-    "iopub_port":   43462,
-    "ip": "9.125.72.72",
-    "transport": "tcp",
-    "signature_scheme": "hmac-sha256",
-    "key": ""
-}
-""".stripMargin
+
+  def getConfigurationFilePath: String = {
+    var filePath = "/opt/toree_proxy/conf/profile.json"
+
+    if (args.length == 0) {
+      for (arg <- args) {
+        if (arg.contains("json")) {
+          filePath = arg
+        }
+      }
+    }
+
+    filePath
+  }
 
   // Parse our configuration and create a client connecting to our kernel
-  val config: Config = ConfigFactory.parseString(profileJSON)
+  val configFileContent = scala.io.Source.fromFile(getConfigurationFilePath).mkString
+  val config: Config = ConfigFactory.parseString(configFileContent)
 
   val client = (new ClientBootstrap(config)
     with StandardSystemInitialization
