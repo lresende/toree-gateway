@@ -1,19 +1,21 @@
+# Mac
+.DS_Store
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Intellij
+.idea/
+.idea_modules/
 *.iml
-.idea
+*.iws
+*.class
+*.log
+
+# mvn specific
 target
 dependency-reduced-pom.xml
-.DS_Store
-module*.zip
-python/dist
-python/build
-python/toree_kernel.egg-info
-**/node_modules/**
-java/.idea/*
-java/javascriptspark.iml
-java/target/*
-java/dependency-reduced-pom.xml
-.__browserify_string_empty.js
-.DS_Store
-jupyter-js-services
-examples/airline/public/data/2008bd.json/*
-incubator-toree/*
+
+src/main/resources/profile.json
