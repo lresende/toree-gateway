@@ -19,6 +19,7 @@ import signal
 import sys
 import time
 import io
+import logging
 
 from os import O_NONBLOCK, read
 from fcntl import fcntl, F_GETFL, F_SETFL
@@ -70,8 +71,8 @@ class ToreeKernel(MetaKernel):
         self.gateway_proc = Popen(args, stderr=PIPE, stdout=PIPE)
         time.sleep(1.5)
         self.gateway = JavaGateway(
-                start_callback_server=True,
-                callback_server_parameters=CallbackServerParameters())
+            start_callback_server=True,
+            callback_server_parameters=CallbackServerParameters())
 
         flags = fcntl(self.gateway_proc.stdout, F_GETFL) # get current p.stdout flags
         fcntl(self.gateway_proc.stdout, F_SETFL, flags | O_NONBLOCK)
@@ -128,7 +129,7 @@ class ToreeKernel(MetaKernel):
             self.handle_output(self.gateway_proc.stderr, self.Error)
         except Py4JError as e:
             if not silent:
-                self.Error(e.cause)
+                self.Error(format(e))
 
         if retval is None:
             return
@@ -139,3 +140,4 @@ class ToreeKernel(MetaKernel):
 
 if __name__ == '__main__':
     ToreeKernel.run_as_main()
+

@@ -38,9 +38,10 @@ class ToreeGateway(client: SparkKernelClient) {
   final val log = LoggerFactory.getLogger(this.getClass.getName.stripSuffix("$"))
 
   private def handleResult(promise:Promise[String], result: ExecuteResult) = {
+    log.warn(s"Result was: ${result.data(MIMEType.PlainText)}")
     // promise.success(result.data(MIMEType.PlainText))
     promise.success(result.content)
-    log.warn(s"Result was: ${result.data(MIMEType.PlainText)}")
+
   }
 
   private def handleSuccess(promise:Promise[String], executeReplyOk: ExecuteReplyOk) = {
@@ -50,7 +51,8 @@ class ToreeGateway(client: SparkKernelClient) {
 
   private def handleError(promise:Promise[String], reply:ExecuteReplyError) {
     log.warn(s"Error was: ${reply.ename.get}")
-    promise.failure(new Throwable("Error evaluating paragraph: " + reply.content))
+    //promise.failure(new Throwable("Error evaluating paragraph: " + reply.content))
+    promise.success(reply.status + ":" + reply.ename.getOrElse("") + " - " + reply.evalue.getOrElse(""))
   }
 
   private def handleStream(promise:Promise[String], content: StreamContent) {
@@ -73,7 +75,10 @@ class ToreeGateway(client: SparkKernelClient) {
       })
 
     } catch {
-      case t : Throwable => log.info("Error proxying request: " + t.getMessage, t)
+      case t : Throwable => {
+        log.info("Error proxying request: " + t.getMessage, t)
+        promise.success("Error proxying request: " + t.getMessage)
+      }
     }
 
     Await.result(promise.future, Duration.Inf)
