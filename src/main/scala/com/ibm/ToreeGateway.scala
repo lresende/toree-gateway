@@ -37,27 +37,30 @@ import scala.util.Try
 class ToreeGateway(client: SparkKernelClient) {
   final val log = LoggerFactory.getLogger(this.getClass.getName.stripSuffix("$"))
 
+
   private def handleResult(promise:Promise[String], result: ExecuteResult) = {
-    log.warn(s"Result was: ${result.data(MIMEType.PlainText)}")
+    log.info(s"Result was: ${result.data(MIMEType.PlainText)}")
     promise.success(result.data(MIMEType.PlainText))
     //promise.success(result.content)
   }
 
   private def handleSuccess(promise:Promise[String], executeReplyOk: ExecuteReplyOk) = {
+    /*
     if(! promise.isCompleted) {
-      log.warn(s"Successful code completion")
+      log.info(s"Successful code completion")
       promise.complete(Try("done"))
     }
+    */
   }
 
   private def handleError(promise:Promise[String], reply:ExecuteReplyError) {
-    log.warn(s"Error was: ${reply.ename.get}")
+    log.info(s"Error was: ${reply.ename.get}")
     //promise.failure(new Throwable("Error evaluating paragraph: " + reply.content))
     promise.success(reply.status + ":" + reply.ename.getOrElse("") + " - " + reply.evalue.getOrElse(""))
   }
 
   private def handleStream(promise:Promise[String], content: StreamContent) {
-    log.warn(s"Received streaming content ${content.name} was: ${content.text}")
+    log.info(s"Received streaming content ${content.name} was: ${content.text}")
     promise.success(content.text)
   }
 
@@ -104,19 +107,16 @@ object ToreeGatewayClient extends App {
     filePath
   }
 
-  log.info("Application Initialized from " + new java.io.File(".").getCanonicalPath)
-  log.info("With the following parameters:" )
-  if (args.length == 0 ) {
-    log.info(">>> NONE" )
-  } else {
-    for (arg <- args) {
-      log.info(">>> Arg :" + arg )
-    }
+  if (log.isDebugEnabled ) {
+    log.debug("Application Initialized from " + new java.io.File(".").getCanonicalPath)
+    log.debug("With the following parameters:" )
   }
 
   // Parse our configuration and create a client connecting to our kernel
   val configFileContent = scala.io.Source.fromFile(getConfigurationFilePath).mkString
-  log.info(">>> Configuration in use " + configFileContent)
+  if (log.isDebugEnabled()) {
+    log.debug(">>> Configuration in use " + configFileContent)
+  }
   val config: Config = ConfigFactory.parseString(configFileContent)
 
   val client = (new ClientBootstrap(config)
