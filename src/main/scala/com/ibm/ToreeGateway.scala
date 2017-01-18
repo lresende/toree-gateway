@@ -124,7 +124,7 @@ object ToreeGatewayClient extends App {
     with StandardSystemInitialization
     with StandardHandlerInitialization).createClient()
 
-  val toreeGateway = new ToreeClientExecutor(client)
+  val toreeGateway = new ToreeGateway(client)
 
   val gatewayServer: GatewayServer = new GatewayServer(toreeGateway)
   gatewayServer.start()
