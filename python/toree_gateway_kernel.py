@@ -39,11 +39,11 @@ class TextOutput(object):
         return self.output
 
 class ToreeKernel(MetaKernel):
-    implementation = 'toree_kernel'
-    implementation_version = '0.1'
+    implementation = 'toree_gateway_kernel'
+    implementation_version = '1.0'
     langauge = 'scala'
     language_version = '2.11'
-    banner = "toree_kernel"
+    banner = "toree_gateway_kernel"
     language_info = {'name': 'scala',
                      'mimetype': 'application/scala',
                      'file_extension': '.scala'}
@@ -64,8 +64,8 @@ class ToreeKernel(MetaKernel):
         args = [
             "java",
             "-classpath",
-            "/opt/toree_proxy/lib/toree-gateway-0.1-jar-with-dependencies.jar",
-            "com.ibm.ToreeClient"
+            "/opt/toree_proxy/lib/toree-gateway-1.0-jar-with-dependencies.jar",
+            "com.ibm.ToreeGateway"
         ]
 
         self.gateway_proc = Popen(args, stderr=PIPE, stdout=PIPE)

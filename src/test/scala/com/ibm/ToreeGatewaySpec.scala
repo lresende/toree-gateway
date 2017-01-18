@@ -24,7 +24,7 @@ import org.scalatest.{FlatSpec, Ignore}
 import org.slf4j.LoggerFactory
 
 @Ignore
-class ToreeClientSpec extends FlatSpec {
+class ToreeGatewaySpec extends FlatSpec {
 
   final val log = LoggerFactory.getLogger(this.getClass.getName.stripSuffix("$"))
 

@@ -87,7 +87,7 @@ class ToreeGateway(client: SparkKernelClient) {
   }
 }
 
-object ToreeClient extends App {
+object ToreeGatewayClient extends App {
 
   final val log = LoggerFactory.getLogger(this.getClass.getName.stripSuffix("$"))
 

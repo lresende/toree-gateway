@@ -2,10 +2,10 @@
   "language_info": {
     "name": "scala"
   },
-  "display_name": "Toree Client Proxy Kernel",
+  "display_name": "Toree Gateway Kernel",
   "argv": [
     "python",
-    "/opt/toree_proxy/python/toree_proxy_kernel.py",
+    "/opt/toree_gateway/python/toree_gateway_kernel.py",
     "-f",
     "{connection_file}"
   ],
