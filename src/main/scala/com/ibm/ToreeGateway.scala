@@ -45,8 +45,8 @@ class ToreeGateway(client: SparkKernelClient) {
   }
 
   private def handleSuccess(promise:Promise[String], executeReplyOk: ExecuteReplyOk) = {
-    log.warn(s"Successful code completion")
     if(! promise.isCompleted) {
+      log.warn(s"Successful code completion")
       promise.complete(Try("done"))
     }
   }
