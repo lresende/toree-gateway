@@ -46,7 +46,7 @@
             <outputDirectory>python</outputDirectory>
             <includes>
                 <include>setup.py</include>
-                <include>toree_gateway_kernel.py</include>
+                <include>toree-gateway-kernel.py</include>
             </includes>
         </fileSet>
 

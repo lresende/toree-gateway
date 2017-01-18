@@ -78,8 +78,8 @@ class ToreeGateway(client: SparkKernelClient) {
 
     } catch {
       case t : Throwable => {
-        log.info("Error proxying request: " + t.getMessage, t)
-        promise.success("Error proxying request: " + t.getMessage)
+        log.info("Error submitting request: " + t.getMessage, t)
+        promise.success("Error submitting request: " + t.getMessage)
       }
     }
 
@@ -92,7 +92,7 @@ object ToreeGatewayClient extends App {
   final val log = LoggerFactory.getLogger(this.getClass.getName.stripSuffix("$"))
 
   def getConfigurationFilePath: String = {
-    var filePath = "/opt/toree_proxy/conf/profile.json"
+    var filePath = "/opt/toree-gateway/conf/profile.json"
 
     if (args.length == 0) {
       for (arg <- args) {
@@ -124,7 +124,7 @@ object ToreeGatewayClient extends App {
     with StandardSystemInitialization
     with StandardHandlerInitialization).createClient()
 
-  val toreeGateway = new ToreeGateway(client)
+  val toreeGateway = new ToreeClientExecutor(client)
 
   val gatewayServer: GatewayServer = new GatewayServer(toreeGateway)
   gatewayServer.start()
