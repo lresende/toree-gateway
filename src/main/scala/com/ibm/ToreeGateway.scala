@@ -39,9 +39,8 @@ class ToreeGateway(client: SparkKernelClient) {
 
   private def handleResult(promise:Promise[String], result: ExecuteResult) = {
     log.warn(s"Result was: ${result.data(MIMEType.PlainText)}")
-    // promise.success(result.data(MIMEType.PlainText))
-    promise.success(result.content)
-
+    promise.success(result.data(MIMEType.PlainText))
+    //promise.success(result.content)
   }
 
   private def handleSuccess(promise:Promise[String], executeReplyOk: ExecuteReplyOk) = {
