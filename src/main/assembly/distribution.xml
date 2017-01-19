@@ -49,15 +49,6 @@
                 <include>toree-gateway-kernel.py</include>
             </includes>
         </fileSet>
-
-        <fileSet>
-            <directory>src/main/resources</directory>
-            <outputDirectory>conf</outputDirectory>
-            <includes>
-                <include>log4j.properties</include>
-                <include>profile.json.template</include>
-            </includes>
-        </fileSet>
     </fileSets>
 
     <files>
