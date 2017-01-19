@@ -65,7 +65,7 @@ class ToreeKernel(MetaKernel):
             "java",
             "-classpath",
             "/opt/toree-gateway/lib/toree-gateway-1.0-jar-with-dependencies.jar",
-            "com.ibm.ToreeGatewayClient"
+            "org.apache.toree.gateway.ToreeGatewayClient"
         ]
 
         self.gateway_proc = Popen(args, stderr=PIPE, stdout=PIPE)

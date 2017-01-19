@@ -15,7 +15,7 @@
  *
  */
 
-package com.ibm
+package org.apache.toree.gateway
 
 import com.typesafe.config.{Config, ConfigFactory}
 import org.apache.toree.kernel.protocol.v5.client.boot.ClientBootstrap
