@@ -94,11 +94,39 @@ class ToreeGatewaySpec extends FlatSpec {
     val result = toreeGateway.eval(
       """
       println(1/0)
-    """.stripMargin
+      """.stripMargin
     ).toString.stripMargin
 
     assert(result.contains("java.lang.ArithmeticException"))
   }
 
+  "gateway" should "receive spark version" in {
+    val result = toreeGateway.eval(
+      """
+      spark.sparkContext.version
+      """.stripMargin
+    ).toString.stripMargin
 
+    assert(result.contains("2.0.2"))
+  }
+
+  "gateway" should "receive spark configuration" in {
+    val result = toreeGateway.eval(
+      """
+      spark.conf.getAll
+      """.stripMargin
+    ).toString.stripMargin
+
+    assert(result.contains("toree-assembly-0.2.0.dev1-incubating-SNAPSHOT.jar"))
+  }
+
+  "gateway" should "receive println result" in {
+    val result = toreeGateway.eval(
+      """
+      println("Hi")
+      """.stripMargin
+    ).toString.stripMargin
+
+    assert(result.contains("Hi"))
+  }
 }
