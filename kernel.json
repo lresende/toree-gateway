@@ -5,7 +5,7 @@
   "display_name": "Toree Gateway Kernel",
   "argv": [
     "python",
-    "/opt/toree-gateway/python/toree-gateway-kernel.py",
+    "/opt/toree-gateway/python/toree_gateway_kernel.py",
     "-f",
     "{connection_file}"
   ],

@@ -95,7 +95,7 @@ object ToreeGatewayClient extends App {
   def getConfigurationFilePath: String = {
     var filePath = "/opt/toree-gateway/conf/profile.json"
 
-    if (args.length == 0) {
+    if (args.length > 0) {
       for (arg <- args) {
         if (arg.contains("json")) {
           filePath = arg

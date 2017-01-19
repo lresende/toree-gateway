@@ -18,4 +18,11 @@
 target
 dependency-reduced-pom.xml
 
+#python files
+*.pyc
+
+
+#Application specific
+*.pid
 src/main/resources/profile.json
+src/main/resources/toree-gateway.properties

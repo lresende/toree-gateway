@@ -19,7 +19,6 @@ import signal
 import sys
 import time
 import io
-import logging
 
 from os import O_NONBLOCK, read
 from fcntl import fcntl, F_GETFL, F_SETFL
@@ -27,6 +26,10 @@ from  subprocess import Popen, PIPE
 from metakernel import MetaKernel
 from py4j.java_gateway import JavaGateway, CallbackServerParameters, java_import
 from py4j.protocol import Py4JError
+
+from config import *
+from lifecycle import *
+from toree_profile import *
 
 class TextOutput(object):
     """Wrapper for text output whose repr is the text itself.
@@ -38,7 +41,7 @@ class TextOutput(object):
     def __repr__(self):
         return self.output
 
-class ToreeKernel(MetaKernel):
+class ToreeGatewayKernel(MetaKernel):
     implementation = 'toree_gateway_kernel'
     implementation_version = '1.0'
     langauge = 'scala'
@@ -48,37 +51,57 @@ class ToreeKernel(MetaKernel):
                      'mimetype': 'application/scala',
                      'file_extension': '.scala'}
 
+    configManager = None
+    toreeLifecycleManager = None
+    toreeProfile = None
 
     def __init__(self, **kwargs):
-        super(ToreeKernel, self).__init__(**kwargs)
+        super(ToreeGatewayKernel, self).__init__(**kwargs)
+        self.configManager = ConfigManager()
+        self.toreeLifecycleManager = LifecycleManager()
+        self._start_toree()
+        # pause, to give time to Toree to start at the backend
+        time.sleep(5)
+        # start toree client and connect to backend
         self._start_toree_client()
 
     def sig_handler(signum, frame):
         self.gateway_proc.terminate()
+        self._stop_toree()
 
     def do_shutdown(self, restart):
-        super(ToreeKernel, self).do_shutdown(restart)
+        super(ToreeGatewayKernel, self).do_shutdown(restart)
         self.gateway_proc.terminate()
+        self._stop_toree()
+
+    def _start_toree(self):
+        self.toreeProfile = self.toreeLifecycleManager.start_toree()
+
+    def _stop_toree(self):
+        self.toreeLifecycleManager.stop_toree(self.toreeProfile)
+        self.toreeProfile = None
 
     def _start_toree_client(self):
         args = [
             "java",
             "-classpath",
-            "/opt/toree-gateway/lib/toree-gateway-1.0-jar-with-dependencies.jar",
-            "org.apache.toree.gateway.ToreeGatewayClient"
+            os.environ["TOREE_GATEWAY_HOME"] + "/lib/toree-gateway-1.0-jar-with-dependencies.jar",
+            "org.apache.toree.gateway.ToreeGatewayClient",
+            "--profile",
+            self.toreeProfile.configurationLocation()
         ]
 
         self.gateway_proc = Popen(args, stderr=PIPE, stdout=PIPE)
-        time.sleep(1.5)
+        time.sleep(2)
         self.gateway = JavaGateway(
             start_callback_server=True,
             callback_server_parameters=CallbackServerParameters())
 
-        flags = fcntl(self.gateway_proc.stdout, F_GETFL) # get current p.stdout flags
-        fcntl(self.gateway_proc.stdout, F_SETFL, flags | O_NONBLOCK)
+        #flags = fcntl(self.gateway_proc.stdout, fcntl.F_GETFL) # get current p.stdout flags
+        #fcntl(self.gateway_proc.stdout, fcntl.F_SETFL, flags | os.O_NONBLOCK)
 
-        flags = fcntl(self.gateway_proc.stderr, F_GETFL) # get current p.stdout flags
-        fcntl(self.gateway_proc.stderr, F_SETFL, flags | O_NONBLOCK)
+        #flags = fcntl(self.gateway_proc.stderr, fcntl.F_GETFL) # get current p.stdout flags
+        #fcntl(self.gateway_proc.stderr, fcntl.F_SETFL, flags | os.O_NONBLOCK)
 
         signal.signal(signal.SIGTERM, self.sig_handler)
         signal.signal(signal.SIGINT, self.sig_handler)
@@ -89,7 +112,7 @@ class ToreeKernel(MetaKernel):
         if not output:
             return
 
-        super(ToreeKernel, self).Error(output)
+        super(ToreeGatewayKernel, self).Error(output)
 
     def handle_output(self, fd, fn):
         stringIO = io.StringIO()
@@ -146,5 +169,5 @@ class ToreeKernel(MetaKernel):
             return retval
 
 if __name__ == '__main__':
-    ToreeKernel.run_as_main()
+    ToreeGatewayKernel.run_as_main()
 
