@@ -125,8 +125,15 @@ class ToreeKernel(MetaKernel):
         retval = None
         try:
             retval = self.gateway.entry_point.eval(code.rstrip())
+            """
+            This would process stdin and stdout, which would generate
+            garbage on the ui with any log or other related content
+            on these streams. For now, disabling it, very useful for
+            debuging purposes.
+
             self.handle_output(self.gateway_proc.stdout, self.Print)
             self.handle_output(self.gateway_proc.stderr, self.Error)
+            """
         except Py4JError as e:
             if not silent:
                 self.Error(format(e))
