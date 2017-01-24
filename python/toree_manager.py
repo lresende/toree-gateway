@@ -108,6 +108,8 @@ class ToreeManager:
             for line in stdout:
                 pid = line.strip()
 
+            print('Toree pid: ' + pid)
+
             profile.updatePid(pid)
 
         except SSHException as e:
@@ -146,12 +148,15 @@ class ToreeManager:
             stderr = channel.makefile_stderr('r')
 
             command = '''
-            kill -9 {}
+            kill -9 {} &&
+            exit
             '''.format(profile.pid())
 
             print(command)
 
             stdin.write(command)
+
+            print(stdout.read())
 
         except timeout:
             print('caught a timeout')
