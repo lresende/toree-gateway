@@ -91,7 +91,7 @@ class ToreeManager:
             config = profile.config()
             command = '''
             cd {} &&
-            . tkarra.sh --ip {} --stdin-port {} --control-port {} --shell-port {} --iopub-port {} --heartbeat-port {} &&
+            . startrun.sh --ip {} --stdin-port {} --control-port {} --shell-port {} --iopub-port {} --heartbeat-port {} &&
             exit
             '''.format( \
                 self.configManager.get('toree.home') + "/bin", \
