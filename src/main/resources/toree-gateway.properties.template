@@ -18,12 +18,19 @@
 [general]
 gateway.home=/opt/toree-gateway
 
-spark.master=spark://9.30.137.220:7077
+# the Spark Master URL (e.g spark://<ip>:7077)
+spark.master=
+# not used at the moment
 #spark.cpus=4
+# not used at the moment
 #spark.memory=1g
 
-toree.ip=9.30.137.220
-toree.username=spark
-toree.password=whoopi
-toree.home=/u/home/SPARK/toree
+# the ip of the remote system where Toree will be running
+toree.ip=
+# the username used to connect to remote system where Toree will be running
+toree.username=
+# the password used to connect to remote system where Toree will be running
+toree.password=
+# location on the remote system where Toree is installed
+toree.home=
 
