@@ -57,6 +57,10 @@ class ToreeGatewayKernel(MetaKernel):
 
     def __init__(self, **kwargs):
         super(ToreeGatewayKernel, self).__init__(**kwargs)
+        """Help on error logging"""
+        sys.stdout = open(os.environ["TOREE_GATEWAY_HOME"] + '/logs/toree_gateway_out.log', 'w')
+        sys.sterr = open(os.environ["TOREE_GATEWAY_HOME"] + '/logs/toree_gateway_err.log', 'w')
+        """"""
         self.configManager = ConfigManager()
         self.toreeLifecycleManager = LifecycleManager()
         self._start_toree()
