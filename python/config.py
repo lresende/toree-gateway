@@ -19,6 +19,16 @@ import os.path
 import configparser
 
 class ConfigManager:
+    """
+    Simple configuration manager
+
+    This expects TOREE_GATEWAY_HOME environment variable
+    to be set and will look for the config file in
+    TOREE_GATEWAY_HOME/conf/toree-gateway.properties
+
+    In dev environment, it will fallback to reading
+    the config file
+    """
     config = configparser.RawConfigParser()
     homePath = os.getcwd()[:-7]
     configPath = None

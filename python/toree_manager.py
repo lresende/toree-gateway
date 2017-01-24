@@ -31,12 +31,20 @@ from toree_profile import *
 from config import *
 
 class ToreeManager:
+    """
+    A Helper class that enables connecting to a remote machine
+    via SSH and properly start/stop Toree instances
+    """
     configManager = None
 
     def __init__(self):
         self.configManager = ConfigManager()
 
-    def getSSHClient(self):
+    def _getSSHClient(self):
+        """
+        Configure and initialize a SSH client
+        :return: a configured SSH client
+        """
         client = SSHClient()
         client.load_system_host_keys()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -46,11 +54,14 @@ class ToreeManager:
             username=self.configManager.get('toree.username'), \
             password=self.configManager.get('toree.password'))
 
-        #print('Client connected successfuly')
-
         return client
 
-    def getSSHChannel(self, client):
+    def _getSSHChannel(self, client):
+        """
+        Configure and initialize a new SSH session on the client
+        :param client: The client to initialize the session
+        :return: the new SSH session
+        """
         channel = client.invoke_shell()
         channel.settimeout(20)
         channel.set_combine_stderr(True)
@@ -58,9 +69,16 @@ class ToreeManager:
         return channel
 
     def start_toree(self, profile):
+        """
+        Connect to a remote system via SSH and
+        start an instance of Toree
+        :param profile: The Toree slot to read profile.json
+        configuration file
+        :return: None
+        """
         try:
-            client = self.getSSHClient()
-            channel = self.getSSHChannel(client)
+            client = self._getSSHClient()
+            channel = self._getSSHChannel(client)
 
             channel = client.invoke_shell()
             channel.settimeout(30)
@@ -83,9 +101,6 @@ class ToreeManager:
                 config['shell_port'], \
                 config['iopub_port'], \
                 config['hb_port'])
-
-
-            #print(command)
 
             stdin.write(command)
 
@@ -114,9 +129,17 @@ class ToreeManager:
             print('all closed')
 
     def stop_toree(self, profile):
+        """
+        Connect to a remote system via SSH and
+        stop the associated Toree instance based on the
+        process id information stored in toree.pid
+        :param profile: The Toree slot to read toree.pid
+        configuration file
+        :return: None
+        """
         try:
-            client = self.getSSHClient()
-            channel = self.getSSHChannel(client)
+            client = self._getSSHClient()
+            channel = self._getSSHChannel(client)
 
             stdin = channel.makefile('w')
             stdout = channel.makefile('r')

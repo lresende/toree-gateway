@@ -22,6 +22,15 @@ from config import *
 from toree_manager import *
 
 class LifecycleManager:
+    """
+    A Orchestrator for Toree Lifecycle which select an available
+    toree sloot, reserv it and start/stop when notebooks are
+    started/stopped.
+
+    Open slots are identified by a not having a toree.pid. In case
+    of corruption or a requirement to kill the toree process, one
+    should also remove the toree.id from the specific Toree slot.
+    """
     configManager = None
     toreeManager = None
 
@@ -31,8 +40,9 @@ class LifecycleManager:
 
     def _reserve_profile(self):
         """
-        Tries to reserv a profile configuration to access Toree
-        :return: the reserved profile folder location, or None
+        Tries to reserve an available toree slot
+
+        :return: the reserved Toree slot or None
         """
         profilesFolder = self.configManager.getProfilesFolder()
         profile = None
@@ -53,12 +63,23 @@ class LifecycleManager:
         return profile
 
     def _release_profile(self, profile):
+        """
+        Release the provided Toree slot
+
+        :param profile: the Toree slot that was previously reserved
+        :return: None
+        """
         profile.release()
 
     def start_toree(self):
         """
-        Reserve a profile to use, and start a remote Toree instance with that configuration
-        :return: the path to the configuration file (profile.json) to use when connecting
+        Reserve a open Toree slot, and start a remote Toree
+        instance with the configuration provided
+
+        :return: the path to the Toree configuration file
+        (profile.json) which was used to start Toree. A
+        runtime error is thrown in case of no more available
+        Toree slots.
         """
         profile = self._reserve_profile()
         if profile is None:
@@ -68,6 +89,11 @@ class LifecycleManager:
         return profile
 
     def stop_toree(self, profile):
+        """
+        Stop remote Toree instance and release Toree slot
+        :param profile: the toree slot that was previously reserved
+        :return: None
+        """
         self.toreeManager.stop_toree(profile)
         self._release_profile(profile)
 
