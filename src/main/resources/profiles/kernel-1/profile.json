@@ -8,6 +8,6 @@
   "transport": "tcp",
   "signature_scheme": "hmac-sha256",
   "key": "",
-  "py4j_java":     25333,
-  "py4j_python":   25334
+  "py4j_java":     25433,
+  "py4j_python":   25434
 }
