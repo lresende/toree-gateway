@@ -83,7 +83,7 @@ class LifecycleManager:
         """
         profile = self._reserve_profile()
         if profile is None:
-            raise RuntimeError('No server resources available.')
+            raise RuntimeError('No Toree slot available.')
         self.toreeManager.start_toree(profile)
 
         return profile
