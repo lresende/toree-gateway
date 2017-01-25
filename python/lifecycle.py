@@ -57,6 +57,8 @@ class LifecycleManager:
                 if profile.isAvailable():
                     profile.reserve()
                     break
+                else:
+                    profile = None
         """Unlock the mutex enabling other processes to select same kernel config"""
         # fcntl.flock(self.mutex, fcntl.LOCK_UN)
 
