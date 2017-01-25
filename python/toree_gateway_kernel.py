@@ -55,19 +55,32 @@ class ToreeGatewayKernel(MetaKernel):
     toreeLifecycleManager = None
     toreeProfile = None
 
+    gateway_proc = None
+    gateway = None
+
     def __init__(self, **kwargs):
         super(ToreeGatewayKernel, self).__init__(**kwargs)
         """Help on error logging"""
         sys.stdout = open(os.environ["TOREE_GATEWAY_HOME"] + '/logs/toree_gateway_out.log', 'w')
         sys.sterr = open(os.environ["TOREE_GATEWAY_HOME"] + '/logs/toree_gateway_err.log', 'w')
         """"""
-        self.configManager = ConfigManager()
-        self.toreeLifecycleManager = LifecycleManager()
-        self._start_toree()
-        # pause, to give time to Toree to start at the backend
-        time.sleep(5)
-        # start toree client and connect to backend
-        self._start_toree_client()
+        try:
+            print('Starting Toree Gateway Kernel Initialization')
+            self.configManager = ConfigManager()
+            self.toreeLifecycleManager = LifecycleManager()
+            self._start_toree()
+            # pause, to give time to Toree to start at the backend
+            time.sleep(5)
+            # start toree client and connect to backend
+            self._start_toree_client()
+        except Exception as e:
+            print('__init__: Error initializing Toree Gateway Kernel')
+            print(format(e))
+            """
+            if self.toreeProfile:
+                self.toreeProfile.release()
+                self.toreeProfile = None
+            """
 
     def sig_handler(signum, frame):
         self.gateway_proc.terminate()
@@ -86,6 +99,13 @@ class ToreeGatewayKernel(MetaKernel):
         self.toreeProfile = None
 
     def _start_toree_client(self):
+        if self.toreeProfile is None:
+            print('_start_toree_client: Could not find a Toree slot to use')
+            return '_start_toree_client: Could not find a Toree slot to use'
+        if len(self.toreeProfile.pid()) == 0:
+            print('_start_toree_client: Invalid Toree PID')
+            return '_start_toree_client: Invalid Toree PID'
+
         args = [
             "java",
             "-classpath",
@@ -95,11 +115,12 @@ class ToreeGatewayKernel(MetaKernel):
             self.toreeProfile.configurationLocation()
         ]
 
+        print('_start_toree_client: Will start py4j server')
         self.gateway_proc = Popen(args, stderr=PIPE, stdout=PIPE)
         time.sleep(5)
 
         config = self.toreeProfile.config()
-        print('Creating py4j gateway using port:{} '.format(config['py4j_java']))
+        print('Creating py4j gateway using port:{} and {} '.format(config['py4j_java'], config['py4j_python']))
 
         self.gateway = JavaGateway(
             gateway_parameters=GatewayParameters(port=config['py4j_java']),
@@ -123,6 +144,7 @@ class ToreeGatewayKernel(MetaKernel):
 
         super(ToreeGatewayKernel, self).Error(output)
 
+    """
     def handle_output(self, fd, fn):
         stringIO = io.StringIO()
         while True:
@@ -138,6 +160,7 @@ class ToreeGatewayKernel(MetaKernel):
             fn(s.strip())
 
         stringIO.close()
+    """
 
     def do_execute_direct(self, code, silent=False):
         """
@@ -150,6 +173,12 @@ class ToreeGatewayKernel(MetaKernel):
 
         MetaKernel code handler.
         """
+
+        if self.toreeProfile is None:
+            print('do_execute_direct: Not connected to a Tori instance')
+            return 'Notebook is offline, due to no resources available on the server. Please try again later or contact an Administrator'
+        else:
+            print('Profile: {}'.format(self.toreeProfile.configurationLocation()))
 
         if not code.strip():
             return None
