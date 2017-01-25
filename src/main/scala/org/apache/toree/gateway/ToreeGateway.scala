@@ -31,6 +31,8 @@ import scala.concurrent.{Await, Promise}
 import scala.concurrent.duration.Duration
 import org.slf4j.{Logger, LoggerFactory}
 
+import play.api.libs.json._
+
 import scala.util.Try
 
 class ToreeGateway(client: SparkKernelClient) {
@@ -124,6 +126,13 @@ object ToreeGatewayClient extends App {
 
   val toreeGateway = new ToreeGateway(client)
 
-  val gatewayServer: GatewayServer = new GatewayServer(toreeGateway)
+  val jsonValue = Json.parse(configFileContent)
+  val port = (jsonValue \ "py4j_java").as[Int]
+
+  if(log.isDebugEnabled()) {
+    log.debug(">>> Starting GatewayServer with port " + port)
+  }
+
+  val gatewayServer: GatewayServer = new GatewayServer(toreeGateway, port)
   gatewayServer.start()
 }

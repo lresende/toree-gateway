@@ -24,7 +24,7 @@ from os import O_NONBLOCK, read
 from fcntl import fcntl, F_GETFL, F_SETFL
 from  subprocess import Popen, PIPE
 from metakernel import MetaKernel
-from py4j.java_gateway import JavaGateway, CallbackServerParameters, java_import
+from py4j.java_gateway import JavaGateway, GatewayParameters, CallbackServerParameters, java_import
 from py4j.protocol import Py4JError
 
 from config import *
@@ -96,10 +96,15 @@ class ToreeGatewayKernel(MetaKernel):
         ]
 
         self.gateway_proc = Popen(args, stderr=PIPE, stdout=PIPE)
-        time.sleep(2)
+        time.sleep(5)
+
+        config = self.toreeProfile.config()
+        print('Creating py4j gateway using port:{} '.format(config['py4j_java']))
+
         self.gateway = JavaGateway(
+            gateway_parameters=GatewayParameters(port=config['py4j_java']),
             start_callback_server=True,
-            callback_server_parameters=CallbackServerParameters())
+            callback_server_parameters=CallbackServerParameters(port=config['py4j_python']))
 
         #flags = fcntl(self.gateway_proc.stdout, fcntl.F_GETFL) # get current p.stdout flags
         #fcntl(self.gateway_proc.stdout, fcntl.F_SETFL, flags | os.O_NONBLOCK)

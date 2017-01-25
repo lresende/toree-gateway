@@ -7,5 +7,7 @@
   "ip": "9.30.137.220",
   "transport": "tcp",
   "signature_scheme": "hmac-sha256",
-  "key": ""
+  "key": "",
+  "py4j_java":     25333,
+  "py4j_python":   25334
 }
