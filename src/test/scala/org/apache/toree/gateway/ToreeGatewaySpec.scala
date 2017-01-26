@@ -23,7 +23,6 @@ import org.apache.toree.kernel.protocol.v5.client.boot.layers.{StandardHandlerIn
 import org.scalatest.{FlatSpec, Ignore}
 import org.slf4j.LoggerFactory
 
-@Ignore
 class ToreeGatewaySpec extends FlatSpec {
 
   final val log = LoggerFactory.getLogger(this.getClass.getName.stripSuffix("$"))
@@ -31,15 +30,17 @@ class ToreeGatewaySpec extends FlatSpec {
 
   val profileJSON: String = """
   {
-    "stdin_port":   48701,
-    "control_port": 48702,
-    "hb_port":      48705,
-    "shell_port":   48703,
-    "iopub_port":   48704,
-    "ip": "9.125.72.72",
-    "transport": "tcp",
-    "signature_scheme": "hmac-sha256",
-    "key": ""
+  "stdin_port":   48701,
+  "control_port": 48702,
+  "hb_port":      48705,
+  "shell_port":   48703,
+  "iopub_port":   48704,
+  "ip": "9.30.137.220",
+  "transport": "tcp",
+  "signature_scheme": "hmac-sha256",
+  "key": "",
+  "py4j_java":     25433,
+  "py4j_python":   25434
   }
   """.stripMargin
 
@@ -90,6 +91,16 @@ class ToreeGatewaySpec extends FlatSpec {
     assert(result.contains("only showing top 1 row"))
   }
 
+  "gateway" should "evaluate simple math statements" in {
+    val result = toreeGateway.eval(
+      """
+      1 + 1
+      """.stripMargin
+    ).toString.stripMargin
+
+    assert(result.contains("2"))
+  }
+
   "gateway" should "receive error messages when exception is thrown" in {
     val result = toreeGateway.eval(
       """
@@ -128,5 +139,15 @@ class ToreeGatewaySpec extends FlatSpec {
     ).toString.stripMargin
 
     assert(result.contains("Hi"))
+  }
+
+  "gateway" should "import statement sucessfully" in {
+    val result = toreeGateway.eval(
+      """
+      import org.apache.spark.sql.functions._
+      """.stripMargin
+    ).toString.stripMargin
+
+    assert(result.contains("done"))
   }
 }
