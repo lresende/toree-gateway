@@ -34,11 +34,9 @@ import org.slf4j.{Logger, LoggerFactory}
 
 import play.api.libs.json._
 
-import scala.util.Try
-
 class ToreeGateway(client: SparkKernelClient) {
   final val log = LoggerFactory.getLogger(this.getClass.getName.stripSuffix("$"))
-
+  val configManager = Config
 
   private def handleResult(promise:Promise[String], result: ExecuteResult) = {
     log.info(s"Result was: ${result.data(MIMEType.PlainText)}")
@@ -61,8 +59,15 @@ class ToreeGateway(client: SparkKernelClient) {
     promise.success(content.text)
   }
 
-  val ResponseTimeout = 1.seconds
-  val EvalTimeout = Duration.Inf  // 10.seconds
+  val ResponseTimeout: FiniteDuration = 1.seconds
+  val EvalTimeout: Duration = {
+    val timeout = configManager.getOrElse("toree.eval-timeout", "Inf")
+    if( "Inf".equalsIgnoreCase("Inf")) {
+      Duration("Inf")
+    } else {
+      Duration(timeout + " seconds")
+    }
+  }  // 10.seconds
 
   private def recoverTimeout[A](future: Future[A], timeout: FiniteDuration, default: A): Future[A] = try {
     Await.ready(future, timeout)
