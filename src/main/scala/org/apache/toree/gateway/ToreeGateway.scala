@@ -62,7 +62,7 @@ class ToreeGateway(client: SparkKernelClient) {
   }
 
   val ResponseTimeout = 1.seconds
-  val EvalTimeout = 10.seconds
+  val EvalTimeout = Duration.Inf  // 10.seconds
 
   private def recoverTimeout[A](future: Future[A], timeout: FiniteDuration, default: A): Future[A] = try {
     Await.ready(future, timeout)

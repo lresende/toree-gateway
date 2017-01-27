@@ -33,4 +33,5 @@ toree.username=
 toree.password=
 # location on the remote system where Toree is installed
 toree.home=
-
+# timeout for code evaluation on toree, default = infinite
+#toree.eval-timeout=
