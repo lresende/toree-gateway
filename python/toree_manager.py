@@ -49,10 +49,18 @@ class ToreeManager:
         client.load_system_host_keys()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-        client.connect( \
-            self.configManager.get('toree.ip'), \
-            username=self.configManager.get('toree.username'), \
-            password=self.configManager.get('toree.password'))
+        if len(self.configManager.get('toree.password')) > 0:
+            # Connect passing user credentials
+            client.connect( \
+                self.configManager.get('toree.ip'), \
+                username=self.configManager.get('toree.username'), \
+                password=self.configManager.get('toree.password'))
+        else:
+            # Connect with ssh passwordless
+            client.connect( \
+                self.configManager.get('toree.ip'), \
+                username=self.configManager.get('toree.username'))
+
 
         return client
 
