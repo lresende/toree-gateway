@@ -23,6 +23,7 @@ import org.apache.toree.kernel.protocol.v5.client.boot.layers.{StandardHandlerIn
 import org.scalatest.{FlatSpec, Ignore}
 import org.slf4j.LoggerFactory
 
+@Ignore
 class ToreeGatewaySpec extends FlatSpec {
 
   final val log = LoggerFactory.getLogger(this.getClass.getName.stripSuffix("$"))
