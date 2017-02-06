@@ -149,6 +149,19 @@ class ToreeGatewaySpec extends FlatSpec {
       """.stripMargin
     ).toString.stripMargin
 
-    assert(result.contains("done"))
+    assert(result.contains("import"))
+  }
+
+  "gateway" should "scala method defined with return type unit should complete" in {
+    val result = toreeGateway.eval(
+      """
+        def doNothing(): Unit = {
+           //ignore and do nothing
+        }
+        doNothing()
+      """.stripMargin
+    ).toString.stripMargin
+
+    assert(result.isEmpty)
   }
 }
