@@ -38,20 +38,13 @@ import scala.util.Try
 class ToreeGateway(client: SparkKernelClient) {
   final val log = LoggerFactory.getLogger(this.getClass.getName.stripSuffix("$"))
 
-
   private def handleResult(promise:Promise[String], result: ExecuteResult) = {
     log.info(s"Result was: ${result.data(MIMEType.PlainText)}")
     promise.success(result.data(MIMEType.PlainText))
-    //promise.success(result.content)
   }
 
   private def handleSuccess(promise:Promise[String], executeReplyOk: ExecuteReplyOk) = {
-    /*
-    if(! promise.isCompleted) {
-      log.info(s"Successful code completion")
-      promise.complete(Try("done"))
-    }
-    */
+    // Ignore success call
   }
 
   private def handleError(promise:Promise[String], reply:ExecuteReplyError) {
