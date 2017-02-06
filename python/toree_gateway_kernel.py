@@ -177,7 +177,7 @@ class ToreeGatewayKernel(MetaKernel):
         """
 
         if self.toreeProfile is None:
-            print('do_execute_direct: Not connected to a Tori instance')
+            print('do_execute_direct: Not connected to a Toree instance')
             return 'Notebook is offline, due to no resources available on the server. Please try again later or contact an Administrator'
 
         if not code.strip():
