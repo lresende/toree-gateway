@@ -33,4 +33,6 @@ toree.username=
 toree.password=
 # location on the remote system where Toree is installed
 toree.home=
+# timeout configuration for cell execution
+toree.excution.timeout=30
 

@@ -46,6 +46,8 @@ class ToreeGatewayKernel(MetaKernel):
                      'file_extension': '.scala'}
 
     isReady = False
+    executionTimeout = 30
+
     configManager = None
     toreeLifecycleManager = None
     toreeProfile = None
@@ -66,6 +68,8 @@ class ToreeGatewayKernel(MetaKernel):
             time.sleep(10)
             print('Reserved profile:' + self.toreeProfile.configurationLocation())
             self.toreeClient = ToreeClient(self.toreeProfile.configurationLocation())
+            self.executionTimeout = timeout=self.configManager.get_as_int('toree.excution.timeout', 30)
+            print('Execution timeout: %s' % self.executionTimeout)
             # pause, to give time to Toree to start at the backend
         except Exception as e:
             print('__init__: Error initializing Toree Gateway Kernel')
@@ -133,7 +137,7 @@ class ToreeGatewayKernel(MetaKernel):
 
         retval = None
         try:
-            retval = self.toreeClient.eval(code.rstrip())
+            retval = self.toreeClient.eval(code.rstrip(), self.executionTimeout)
         except Exception as e:
             if not silent:
                 self.Error(format(e))

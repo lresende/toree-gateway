@@ -30,17 +30,19 @@ class ConfigManager:
     the config file
     """
     config = configparser.RawConfigParser()
-    homePath = os.getcwd()[:-7]
+    homePath = None
     configPath = None
     profilesPath = None
 
     def __init__(self):
         if os.environ["TOREE_GATEWAY_HOME"]:
+            self.homePath = os.environ["TOREE_GATEWAY_HOME"]
             self.configPath = os.environ["TOREE_GATEWAY_HOME"] + '/conf'
             self.profilesPath = os.environ["TOREE_GATEWAY_HOME"] + '/profiles'
         else:
-            self.configPath = self.homePath + '/src/main/resources/'
-            self.profilesPath = self.homePath + '/src/main/resources/profiles'
+            self.homePath = os.getcwd()[:-7]
+            self.configPath = self.homePath + '/conf'
+            self.profilesPath = self.homePath + '/profiles'
 
         self.config.read(self.configPath + '/toree-gateway.properties')
 
@@ -66,13 +68,32 @@ class ConfigManager:
         return self.profilesPath
 
 
+    def has_key(self, key):
+        """
+        if the given key existis, return True otherwise False
+        :param key: the configuration key
+        :return:
+        """
+        return self.config.has_option('general', key)
+
     def get(self, key):
         """
-        Return a configuration from gegeral section
+        Return a configuration from general section
         :param key: the configuration key
         :return:
         """
         return self.config.get('general', key)
+
+    def get_as_int(self, key, default=0):
+        """
+        return a configuration from general section as integer
+        :param key: the configuration key
+        :return:
+        """
+        if self.has_key(key):
+            return int(self.get(key))
+        else:
+            return default
 
     def getBySection(self, section, key):
         """
@@ -84,9 +105,13 @@ class ConfigManager:
         return self.config.get(section, key)
 
 
+
 """
 c = ConfigManager()
-print c.getHomeFolder()
-print c.getConfigurationFolder()
-print c.getProfilesFolder()
+print( c.getHomeFolder() )
+print( c.getConfigurationFolder() )
+print( c.getProfilesFolder() )
+print( c.get_as_int('toree.excution.timeout') )
+print( c.get_as_int('toree.excution.timeout', 70) )
+print( c.get_as_int('toree.invalid', 50) )
 """
