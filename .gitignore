@@ -24,5 +24,6 @@ dependency-reduced-pom.xml
 
 #Application specific
 *.pid
-src/main/resources/profile.json
-src/main/resources/toree-gateway.properties
+profiles/profile.json
+conf/config
+conf/toree-gateway.properties

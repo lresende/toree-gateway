@@ -1,0 +1,13 @@
+{
+  "stdin_port":   48706,
+  "control_port": 48707,
+  "hb_port":      48710,
+  "shell_port":   48708,
+  "iopub_port":   48709,
+  "ip": "9.30.137.220",
+  "transport": "tcp",
+  "signature_scheme": "hmac-sha256",
+  "key": "",
+  "py4j_java":     25435,
+  "py4j_python":   25436
+}
