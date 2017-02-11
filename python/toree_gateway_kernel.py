@@ -24,6 +24,7 @@ from config import *
 from lifecycle import *
 from toree_client import *
 from toree_profile import *
+from util import debug_print, debug_pprint
 
 class TextOutput(object):
     """Wrapper for text output whose repr is the text itself.
@@ -55,25 +56,26 @@ class ToreeGatewayKernel(MetaKernel):
 
     def __init__(self, **kwargs):
         super(ToreeGatewayKernel, self).__init__(**kwargs)
+        self.configManager = ConfigManager()
         """Help on error logging"""
-        ts = str(time.time()).split('.')[0]
-        sys.stdout = open(os.environ["TOREE_GATEWAY_HOME"] + '/logs/toree_gateway_out_' + ts + '.log', 'w')
-        sys.sterr = open(os.environ["TOREE_GATEWAY_HOME"] + '/logs/toree_gateway_err_' + ts + '.log', 'w')
+        if self.configManager.get('gateway.debug') == 'True':
+            ts = str(time.time()).split('.')[0]
+            sys.stdout = open(os.environ["TOREE_GATEWAY_HOME"] + '/logs/toree_gateway_out_' + ts + '.log', 'w')
+            sys.sterr = open(os.environ["TOREE_GATEWAY_HOME"] + '/logs/toree_gateway_err_' + ts + '.log', 'w')
         """"""
         try:
-            print('Starting Toree Gateway Kernel Initialization')
-            self.configManager = ConfigManager()
+            debug_print('Starting Toree Gateway Kernel Initialization')
             self.toreeLifecycleManager = LifecycleManager()
             self._start_toree()
             time.sleep(10)
-            print('Reserved profile:' + self.toreeProfile.configurationLocation())
+            debug_print('Reserved profile:' + self.toreeProfile.configurationLocation())
             self.toreeClient = ToreeClient(self.toreeProfile.configurationLocation())
             self.executionTimeout = timeout=self.configManager.get_as_int('toree.excution.timeout', 30)
-            print('Execution timeout: %s' % self.executionTimeout)
+            debug_print('Execution timeout: %s' % self.executionTimeout)
             # pause, to give time to Toree to start at the backend
         except Exception as e:
-            print('__init__: Error initializing Toree Gateway Kernel')
-            print(format(e))
+            debug_print('__init__: Error initializing Toree Gateway Kernel')
+            debug_print(format(e))
             """
             if self.toreeProfile:
                 self.toreeProfile.release()
@@ -94,7 +96,6 @@ class ToreeGatewayKernel(MetaKernel):
         self.toreeLifecycleManager.stop_toree(self.toreeProfile)
         self.toreeProfile = None
 
-
     def Error(self, output):
         if not output:
             return
@@ -114,11 +115,11 @@ class ToreeGatewayKernel(MetaKernel):
         """
 
         if self.toreeProfile is None:
-            print('do_execute_direct: Not connected to a Toree instance')
+            debug_print('do_execute_direct: Not connected to a Toree instance')
             return 'Notebook is offline, due to no resource availability on the server. Please try again later or contact an Administrator'
 
         if not self.toreeClient.is_alive():
-            print('do_execute_direct: Kernel client is not alive')
+            debug_print('do_execute_direct: Kernel client is not alive')
             return 'Not connected to a Kernel'
 
         if code is None or code.strip() is None:
@@ -133,7 +134,7 @@ class ToreeGatewayKernel(MetaKernel):
             else:
                 return 'Kernel is not ready to process yet'
 
-        print('Evaluating: ' + code.strip())
+        debug_print('Evaluating: ' + code.strip())
 
         retval = None
         try:

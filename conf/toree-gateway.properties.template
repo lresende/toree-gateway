@@ -17,6 +17,8 @@
 
 [general]
 gateway.home=/opt/toree-gateway
+# enable debug mode for the toree gateway (valid values True/False)
+gateway.debug=False
 
 # the Spark Master URL (e.g spark://<ip>:7077)
 spark.master=

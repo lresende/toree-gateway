@@ -16,8 +16,8 @@
 
 import time
 
+from util import debug_print, debug_pprint
 from jupyter_client import BlockingKernelClient
-from pprint import pprint
 
 try:
     from queue import Empty  # Python 3
@@ -76,45 +76,45 @@ class ToreeClient:
         if self.client.is_alive() == False:
             raise Exception('Problem connecting to remote kernel: Kernel is NOT alive')
 
-        print('-----------------------------------------')
-        print('Executing: ')
-        pprint(code)
+        debug_print('-----------------------------------------')
+        debug_print('Executing: ')
+        debug_pprint(code)
 
         msg_id = self.client.execute(code=code, allow_stdin=False)
-        print('Message id for code execution:'  + msg_id)
+        debug_print('Message id for code execution:'  + msg_id)
 
         # now the kernel should be 'busy' with [parent_header][msg_id] being the current message
         busy_msg = self.client.iopub_channel.get_msg(timeout=1)
-        print('checking current kernel status')
-        print(busy_msg['parent_header']['msg_id'])
-        print(busy_msg['content']['execution_state'])
-        pprint(busy_msg)
+        debug_print('checking current kernel status')
+        debug_print(busy_msg['parent_header']['msg_id'])
+        debug_print(busy_msg['content']['execution_state'])
+        debug_pprint(busy_msg)
 
         if busy_msg['content']['execution_state'] == 'busy':
-            print('busy_message')
+            debug_print('busy_message')
         else:
-            print('error: not busy')
+            debug_print('error: not busy')
 
         results = []
         while True:
             msg = self.client.get_iopub_msg()
-            print('message')
-            pprint(msg)
+            debug_print('message')
+            debug_pprint(msg)
             # validate that the responses are still related to current request
             if msg['parent_header']['msg_id'] != msg_id:
-                print('Ignoring messages related to ' + msg['parent_header']['msg_id'] + ' request')
+                debug_print('Ignoring messages related to ' + msg['parent_header']['msg_id'] + ' request')
                 #raise Exception('Invalid message id received ' + msg['parent_header']['msg_id'] + '  expected ' + msg_id)
 
             # When idle, responses have all been processed/returned
             elif msg['msg_type'] == 'status':
-                print('current message status: ' + msg['msg_type'])
+                debug_print('current message status: ' + msg['msg_type'])
                 if msg['content']['execution_state'] == 'idle':
                     break
 
             # validate execute_inputs are from current  code
             elif msg['msg_type'] == 'execute_input':
-                print('current message status: ' + msg['msg_type'])
-                print('current message content code: ' + msg['content']['code'])
+                debug_print('current message status: ' + msg['msg_type'])
+                debug_print('current message content code: ' + msg['content']['code'])
                 if msg['content']['code'] == code:
                     continue
 

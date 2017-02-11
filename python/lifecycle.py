@@ -19,6 +19,7 @@ import os.path
 import time
 
 from config import *
+from toree_profile import *
 from toree_manager import *
 
 class LifecycleManager:

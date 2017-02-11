@@ -14,20 +14,12 @@
 # limitations under the License.
 #
 
-import os
-import os.path
-import fcntl
-import time
-import json
-import datetime
 
-import base64
 import paramiko
 from paramiko import SSHClient, SSHException
-from pprint import pprint
 from socket import *
 
-from toree_profile import *
+from util import debug_print, debug_pprint
 from config import *
 
 class ToreeManager:
@@ -116,16 +108,16 @@ class ToreeManager:
             for line in stdout:
                 pid = line.strip()
 
-            print('Toree pid: ' + pid)
+            debug_print('Toree pid: ' + pid)
 
             profile.updatePid(pid)
 
         except SSHException as e:
-            pprint(e)
+            debug_pprint(e)
         except timeout:
-            print('caught a timeout')
+            debug_print('caught a timeout')
         finally:
-            print('closing connection')
+            debug_print('closing connection')
             if stderr:
                 stderr.close()
             if stdout:
@@ -136,7 +128,7 @@ class ToreeManager:
                 channel.close()
             if client:
                 client.close()
-            print('all closed')
+            debug_print('all closed')
 
     def stop_toree(self, profile):
         """
@@ -160,23 +152,23 @@ class ToreeManager:
             exit
             '''.format(profile.pid())
 
-            print(command)
+            debug_print(command)
 
             stdin.write(command)
 
-            print(stdout.read())
+            debug_print(stdout.read())
 
         except timeout:
-            print('caught a timeout')
+            debug_print('caught a timeout')
         finally:
-            print('closing connection')
+            debug_print('closing connection')
             if stdout:
                 stdout.close()
             if channel:
                 channel.close()
             if client:
                 client.close()
-            print('all closed')
+            debug_print('all closed')
 
 
 """
