@@ -46,12 +46,8 @@ build_connection_profiles(){
       echo "    \"ip\":                \"$TOREE_IP\"," >> $PROFILE
       echo "    \"transport\":         \"$TOREE_TRANSPORT\"," >> $PROFILE
       echo "    \"signature_scheme\":  \"$TOREE_SIG_SCHEME\"," >> $PROFILE
-      # echo "    \"key\":               \"$TOREE_KEY\"" >> $PROFILE
-      echo "    \"key\": \"\"," >> $PROFILE
-      echo "    \"py4j_java\":    $p," >> $PROFILE; let p=p+500
-      echo "    \"py4j_python\":  $p" >> $PROFILE; let p=p+1
+      echo "    \"key\": \"\"" >> $PROFILE
       echo "}" >> $PROFILE
-      let p=p-501
    done
 }
 
