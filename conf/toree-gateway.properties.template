@@ -16,9 +16,10 @@
 
 
 [general]
+# Location where toree gateway is installed
 gateway.home=/opt/toree-gateway
 # enable debug mode for the toree gateway (valid values True/False)
-gateway.debug=False
+#gateway.debug=False
 
 # the Spark Master URL (e.g spark://<ip>:7077)
 spark.master=
@@ -37,4 +38,8 @@ toree.password=
 toree.home=
 # timeout configuration for cell execution
 toree.excution.timeout=30
+# toree initialization retries (default 3)
+#toree.initialization.retries=3
+# toree initialization retry interval (default 5)
+#toree.initialization.retry.interval=5
 

@@ -41,6 +41,8 @@ class ToreeManager:
         client.load_system_host_keys()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
+        debug_print('Connecting to remote system to start Toree : %s ' % self.configManager.get('toree.ip'))
+
         if len(self.configManager.get('toree.password')) > 0:
             # Connect passing user credentials
             client.connect( \
@@ -102,13 +104,15 @@ class ToreeManager:
                 config['iopub_port'], \
                 config['hb_port'])
 
+            debug_print('Executing the following command to start Toree: \n %s' % command)
+
             stdin.write(command)
 
             pid = None
             for line in stdout:
                 pid = line.strip()
 
-            debug_print('Toree pid: ' + pid)
+            debug_print('Toree started with pid: %s ' % pid)
 
             profile.updatePid(pid)
 

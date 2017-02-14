@@ -70,7 +70,7 @@ class ToreeGatewayKernel(MetaKernel):
             time.sleep(10)
             debug_print('Reserved profile:' + self.toreeProfile.configurationLocation())
             self.toreeClient = ToreeClient(self.toreeProfile.configurationLocation())
-            self.executionTimeout = timeout=self.configManager.get_as_int('toree.excution.timeout', 30)
+            self.executionTimeout = self.configManager.get_as_int('toree.excution.timeout', 30)
             debug_print('Execution timeout: %s' % self.executionTimeout)
             # pause, to give time to Toree to start at the backend
         except Exception as e:
@@ -129,9 +129,22 @@ class ToreeGatewayKernel(MetaKernel):
             return None
 
         if not self.isReady:
-            if self.toreeClient.is_ready():
-                self.isReady = True
-            else:
+            retries = self.configManager.get_as_int('toree.initialization.retries', 3)
+            retry_interval = self.configManager.get_as_int('toree.initialization.retry.interval', 5)
+
+            debug_print('Trying to verify Toree has been initialized with options: retries %d times / retry interval %d seconds' % (retries, retry_interval))
+            n = 1
+            while n <= retries:
+                debug_print('Trying to connect to remote Toree for %d time' % n)
+                if self.toreeClient.is_ready():
+                    self.isReady = True
+                    break
+                else:
+                    time.sleep(retry_interval)
+
+                n += 1
+
+            if not self.isReady:
                 return 'Kernel is not ready to process yet'
 
         debug_print('Evaluating: ' + code.strip())
