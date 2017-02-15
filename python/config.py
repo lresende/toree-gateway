@@ -76,13 +76,17 @@ class ConfigManager:
         """
         return self.config.has_option('general', key)
 
-    def get(self, key):
+    def get(self, key, default=None):
         """
         Return a configuration from general section
         :param key: the configuration key
         :return:
         """
-        return self.config.get('general', key)
+
+        if self.config.has_option('general', key):
+            return self.config.get('general', key)
+        else:
+            return default
 
     def get_as_int(self, key, default=0):
         """
