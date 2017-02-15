@@ -18,7 +18,7 @@ import os
 import sys
 import time
 
-from metakernel import MetaKernel
+from metakernel import MetaKernel, ExceptionWrapper
 
 from config import *
 from lifecycle import *
@@ -152,9 +152,11 @@ class ToreeGatewayKernel(MetaKernel):
         retval = None
         try:
             retval = self.toreeClient.eval(code.rstrip(), self.executionTimeout)
-        except Exception as e:
+        except Exception as exc:
+            #this should be final solution
+            #return ExceptionWrapper(exc)
             if not silent:
-                self.Error(format(e))
+                self.Error(format(exc))
 
         if retval is None:
             return

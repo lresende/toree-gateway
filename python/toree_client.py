@@ -131,9 +131,13 @@ class ToreeClient:
                 results.append(msg['content']['data']['text/plain'])
                 continue
 
-        #return reply, output_msgs
-        return ''.join(results)
 
+        if reply['content']['status'] == 'ok':
+            debug_print('Returning sucessful invocation')
+            return ''.join(results)
+        else:
+            debug_print('Returning failed invocation')
+            raise Exception("Error: %s - %s" %(reply['content']['ename'], reply['content']['evalue']))
 
 
 """
