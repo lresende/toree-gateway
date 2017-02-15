@@ -36,7 +36,7 @@ class ToreeClient:
 
     def is_ready(self):
         try:
-            result = self.eval('1')
+            result = self.eval('1', silent=True)
             if result == '1':
                 return True
             else:
@@ -71,7 +71,7 @@ class ToreeClient:
                 raise RuntimeError("Kernel didn't respond in %d seconds" % timeout)
 
 
-    def eval(self, code, timeout=TIMEOUT):
+    def eval(self, code, silent=False, timeout=TIMEOUT):
 
         if self.client.is_alive() == False:
             raise Exception('Problem connecting to remote kernel: Kernel is NOT alive')
@@ -80,7 +80,7 @@ class ToreeClient:
         debug_print('Executing: ')
         debug_pprint(code)
 
-        msg_id = self.client.execute(code=code, allow_stdin=False)
+        msg_id = self.client.execute(code=code, silent=silent, allow_stdin=False)
         debug_print('Message id for code execution:'  + msg_id)
 
         # now the kernel should be 'busy' with [parent_header][msg_id] being the current message
