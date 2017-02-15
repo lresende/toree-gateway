@@ -18,6 +18,7 @@ import time
 
 from util import debug_print, debug_pprint
 from jupyter_client import BlockingKernelClient
+from pprint import pprint
 
 try:
     from queue import Empty  # Python 3
@@ -95,6 +96,10 @@ class ToreeClient:
         else:
             debug_print('error: not busy')
 
+        reply = self.client.get_shell_msg(timeout=3)
+        print('message reply')
+        pprint(reply)
+
         results = []
         while True:
             msg = self.client.get_iopub_msg()
@@ -131,13 +136,18 @@ class ToreeClient:
 
 
 
-#client = ToreeClient('/Users/lresende/opensource/jupyter/toree-gateway/profiles/profile.json')
-#print('is alive: %s' % client.is_alive())
-#print('is ready: %s' % client.is_ready())
-#command = '''print(1+1)\nprint(2+2)\n3'''
-#pprint(client.eval(command))
-#command = '''print(1/0)'''
-#pprint(client.eval(command))
+"""
+client = ToreeClient('/Users/lresende/opensource/jupyter/toree-gateway/profiles/profile.json')
+
+print('is alive: %s' % client.is_alive())
+print('is ready: %s' % client.is_ready())
+
+command = '''print(1+1)\nprint(2+2)\n3'''
+pprint(client.eval(command))
+
+command = '''print(1/0)'''
+pprint(client.eval(command))
 
 #result = client.eval(command)
 #print('Result: ' + pprint(result))
+"""
