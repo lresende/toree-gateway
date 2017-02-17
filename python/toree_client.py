@@ -16,9 +16,10 @@
 
 import time
 
+from wrappers import *
+from pprint import pprint
 from util import debug_print, debug_pprint
 from jupyter_client import BlockingKernelClient
-from pprint import pprint
 
 try:
     from queue import Empty  # Python 3
@@ -100,6 +101,7 @@ class ToreeClient:
         print('message reply')
         pprint(reply)
 
+        type = ''
         results = []
         while True:
             msg = self.client.get_iopub_msg()
@@ -124,17 +126,27 @@ class ToreeClient:
                     continue
 
             elif msg['msg_type'] == 'stream':
+                type = 'stream'
                 results.append(msg['content']['text'])
                 continue
 
             elif msg['msg_type'] == 'execute_result':
-                results.append(msg['content']['data']['text/plain'])
+                if 'text/plain' in msg['content']['data']:
+                    type = 'text'
+                    results.append(msg['content']['data']['text/plain'])
+                elif 'text/html' in msg['content']['data']:
+                    type = 'html'
+                    results.append(msg['content']['data']['text/html'])
                 continue
-
 
         if reply['content']['status'] == 'ok':
             debug_print('Returning sucessful invocation')
-            return ''.join(results)
+            if type == 'html':
+                html = ''.join(results)
+                htmlWrapper = HtmlOutput(html)
+                return htmlWrapper
+            else:
+                return ''.join(results)
         else:
             debug_print('Returning failed invocation')
             raise Exception("Error: %s - %s" %(reply['content']['ename'], reply['content']['evalue']))

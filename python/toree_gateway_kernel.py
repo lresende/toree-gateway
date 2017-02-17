@@ -18,23 +18,15 @@ import os
 import sys
 import time
 
+from IPython.display import HTML, display
 from metakernel import MetaKernel, ExceptionWrapper
 
 from config import *
+from wrappers import *
 from lifecycle import *
 from toree_client import *
 from toree_profile import *
 from util import debug_print, debug_pprint
-
-class TextOutput(object):
-    """Wrapper for text output whose repr is the text itself.
-       This avoids `repr(output)` adding quotation marks around already-rendered text.
-    """
-    def __init__(self, output):
-        self.output = output
-
-    def __repr__(self):
-        return self.output
 
 class ToreeGatewayKernel(MetaKernel):
     implementation = 'toree_gateway_kernel'
@@ -153,12 +145,15 @@ class ToreeGatewayKernel(MetaKernel):
         try:
             retval = self.toreeClient.eval(code.rstrip(), self.executionTimeout)
         except Exception as exc:
-            #this should be final solution
-            #return ExceptionWrapper(exc)
+            # this should be final solution
+            # return ExceptionWrapper(exc)
             if not silent:
                 self.Error(format(exc))
 
         if retval is None:
+            return
+        elif isinstance(retval, HtmlOutput):
+            self.Display(HTML(retval.output))
             return
         elif isinstance(retval, str):
             return TextOutput(retval)
