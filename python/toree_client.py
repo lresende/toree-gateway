@@ -75,6 +75,7 @@ class ToreeClient:
 
     def eval(self, code, timeout=TIMEOUT):
 
+        # Validate that remote kernel is available before submitting request
         if self.client.is_alive() == False:
             raise Exception('Problem connecting to remote kernel: Kernel is NOT alive')
 
@@ -82,41 +83,42 @@ class ToreeClient:
         debug_print('Executing: ')
         debug_pprint(code)
 
+        # submit request and retrieve the message id for the execution
         msg_id = self.client.execute(code=code, allow_stdin=False)
         debug_print('Message id for code execution:'  + msg_id)
 
         # now the kernel should be 'busy' with [parent_header][msg_id] being the current message
         busy_msg = self.client.iopub_channel.get_msg(timeout=1)
-        debug_print('checking current kernel status')
-        debug_print(busy_msg['parent_header']['msg_id'])
-        debug_print(busy_msg['content']['execution_state'])
-        debug_pprint(busy_msg)
+        debug_print('Current kernel status (%s): %s' % (busy_msg['parent_header']['msg_id'], busy_msg['content']['execution_state']))
 
         if busy_msg['content']['execution_state'] == 'busy':
-            debug_print('busy_message')
+            debug_print('busy_message received as expected')
         else:
-            debug_print('error: not busy')
+            debug_print('Error: did not receive busy message for request %s' % msg_id)
 
-        reply = self.client.get_shell_msg(timeout=3)
-        print('message reply')
-        pprint(reply)
+        debug_pprint(busy_msg)
+
+        # Check message reply status (ok / error)
+        debug_print('Waiting for status reply')
+        reply = self.client.get_shell_msg(block=True, timeout=TIMEOUT)
+        debug_print('message reply: %s' % reply['content']['status'])
+        debug_pprint(reply)
 
         type = ''
         results = []
         while True:
-            msg = self.client.get_iopub_msg()
+            try:
+                msg = self.client.get_iopub_msg(timeout=timeout)
+            except:
+                raise Exception("Error: Timeout executing request")
+
             debug_print('message')
             debug_pprint(msg)
+
             # validate that the responses are still related to current request
             if msg['parent_header']['msg_id'] != msg_id:
-                debug_print('Ignoring messages related to ' + msg['parent_header']['msg_id'] + ' request')
-                #raise Exception('Invalid message id received ' + msg['parent_header']['msg_id'] + '  expected ' + msg_id)
-
-            # When idle, responses have all been processed/returned
-            elif msg['msg_type'] == 'status':
-                debug_print('current message status: ' + msg['msg_type'])
-                if msg['content']['execution_state'] == 'idle':
-                    break
+                debug_print('Warning: Invalid message id received ' + msg['parent_header']['msg_id'] + '  expected ' + msg_id)
+                continue
 
             # validate execute_inputs are from current  code
             elif msg['msg_type'] == 'execute_input':
@@ -125,12 +127,17 @@ class ToreeClient:
                 if msg['content']['code'] == code:
                     continue
 
+            # Stream results are being returned, accumulate them to results
             elif msg['msg_type'] == 'stream':
                 type = 'stream'
                 results.append(msg['content']['text'])
                 continue
 
+            # Execute_Results are being returned:
+            # They can be text/plain or text/html
+            # accumulate them to results
             elif msg['msg_type'] == 'execute_result':
+                debug_print('Received results of type: %s ' % msg['content']['data'])
                 if 'text/plain' in msg['content']['data']:
                     type = 'text'
                     results.append(msg['content']['data']['text/plain'])
@@ -139,8 +146,17 @@ class ToreeClient:
                     results.append(msg['content']['data']['text/html'])
                 continue
 
+            # When idle, responses have all been processed/returned
+            elif msg['msg_type'] == 'status':
+                debug_print('current message status: ' + msg['content']['execution_state'])
+                if msg['content']['execution_state'] == 'idle':
+                    break
+
+            else:
+                debug_print('Message ignored: %s' % msg['msg_type'])
+
         if reply['content']['status'] == 'ok':
-            debug_print('Returning sucessful invocation')
+            debug_print('Returning sucessful invocation result')
             if type == 'html':
                 html = ''.join(results)
                 htmlWrapper = HtmlOutput(html)
@@ -148,7 +164,7 @@ class ToreeClient:
             else:
                 return ''.join(results)
         else:
-            debug_print('Returning failed invocation')
+            debug_print('Returning failed invocation exception')
             raise Exception('Error: %s - %s' %(reply['content']['ename'], reply['content']['evalue']))
 
 
