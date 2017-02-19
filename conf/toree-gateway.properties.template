@@ -37,7 +37,7 @@ toree.password=
 # location on the remote system where Toree is installed
 toree.home=
 # timeout configuration for cell execution
-toree.excution.timeout=30
+toree.excution.timeout=100
 # toree initialization retries (default 3)
 #toree.initialization.retries=3
 # toree initialization retry interval (default 5)
