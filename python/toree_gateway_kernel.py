@@ -147,8 +147,7 @@ class ToreeGatewayKernel(MetaKernel):
         except Exception as exc:
             # this should be final solution
             # return ExceptionWrapper(exc)
-            if not silent:
-                self.Error(format(exc))
+            self.Error(exc)
 
         if retval is None:
             return

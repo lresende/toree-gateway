@@ -169,7 +169,15 @@ class ToreeClient:
                 return ''.join(results)
         else:
             debug_print('Returning failed invocation exception')
-            raise Exception('Error: %s - %s' %(reply['content']['ename'], reply['content']['evalue']))
+            error = ''
+            if 'ename' in reply['content']:
+                error = reply['content']['ename']
+
+            error_message = ''
+            if 'evalue' in reply['content']:
+                error_message = reply['content']['evalue']
+
+            raise Exception('Error: %s - %s' %(error, error_message))
 
 
 """
