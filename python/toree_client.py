@@ -26,7 +26,7 @@ try:
 except ImportError:
     from Queue import Empty  # Python 2
 
-TIMEOUT = 30
+TIMEOUT = 60
 
 class ToreeClient:
     def __init__(self, connectionFileLocation):
@@ -88,7 +88,11 @@ class ToreeClient:
         debug_print('Message id for code execution:'  + msg_id)
 
         # now the kernel should be 'busy' with [parent_header][msg_id] being the current message
-        busy_msg = self.client.iopub_channel.get_msg(timeout=1)
+        try:
+            busy_msg = self.client.iopub_channel.get_msg(block=True, timeout=timeout)
+        except:
+            raise Exception('Error: Timeout retrieving busy status message')
+
         debug_print('Current kernel status (%s): %s' % (busy_msg['parent_header']['msg_id'], busy_msg['content']['execution_state']))
 
         if busy_msg['content']['execution_state'] == 'busy':
@@ -100,7 +104,7 @@ class ToreeClient:
 
         # Check message reply status (ok / error)
         debug_print('Waiting for status reply')
-        reply = self.client.get_shell_msg(block=True, timeout=TIMEOUT)
+        reply = self.client.get_shell_msg(block=True, timeout=timeout)
         debug_print('message reply: %s' % reply['content']['status'])
         debug_pprint(reply)
 
