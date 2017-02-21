@@ -14,13 +14,14 @@
 # limitations under the License.
 #
 
-
+import base64
 import paramiko
 from paramiko import SSHClient, SSHException
 from socket import *
 
 from util import debug_print, debug_pprint
 from config import *
+from security import decode_password
 
 class ToreeManager:
     """
@@ -41,14 +42,12 @@ class ToreeManager:
         client.load_system_host_keys()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-        debug_print('Connecting to remote system to start Toree : %s ' % self.configManager.get('toree.ip'))
-
         if len(self.configManager.get('toree.password')) > 0:
             # Connect passing user credentials
             client.connect( \
                 self.configManager.get('toree.ip'), \
                 username=self.configManager.get('toree.username'), \
-                password=self.configManager.get('toree.password'))
+                password=decode_password(self.configManager.get('toree.password')))
         else:
             # Connect with ssh passwordless
             client.connect( \
@@ -89,6 +88,8 @@ class ToreeManager:
             stdin = channel.makefile('w')
             stdout = channel.makefile('r')
             stderr = channel.makefile_stderr('r')
+
+            debug_print('Connecting to remote system to start Toree : %s ' % self.configManager.get('toree.ip'))
 
             config = profile.config()
             command = '''
@@ -151,12 +152,14 @@ class ToreeManager:
             stdout = channel.makefile('r')
             stderr = channel.makefile_stderr('r')
 
+            debug_print('Connecting to remote system to stop Toree : %s ' % self.configManager.get('toree.ip'))
+
             command = '''
             kill -9 {} &&
             exit
             '''.format(profile.pid())
 
-            debug_print(command)
+            debug_print('Executing the following command to stop Toree: \n %s' % command)
 
             stdin.write(command)
 
