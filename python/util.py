@@ -20,10 +20,26 @@ from config import *
 configManager = ConfigManager()
 isDebugging = configManager.get('gateway.debug') == 'True'
 
+def _clean_message(message):
+    password_string = '''"password"'''
+    quote_string = '''"'''
+
+    clean_message = None
+    if "password" in message:
+        p1 = message.find(password_string) + len(password_string)
+        p2 = message.find(quote_string, p1) + len(quote_string)
+        p3 = message.find(quote_string, p2) + len(quote_string) -1
+        clean_message = message[:p2] + "*******" + message[p3:]
+    else:
+        clean_message = message
+
+    return clean_message
+
+
 def debug_print(message):
     if isDebugging:
-        print(message)
+        print(_clean_message(message))
 
 def debug_pprint(message):
     if isDebugging:
-        pprint(message)
+        pprint(_clean_message(message))
