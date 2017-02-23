@@ -22,7 +22,7 @@ setup(name='toree_gateway_kernel',
     description='Toree Gateway',
     long_description='A Gateway Kernel for Apache Toree, based on MetaKernel',
     py_modules=['toree_gateway_kernel'],
-    install_requires=['metakernel', 'py4j'],
+    install_requires=['metakernel', 'paramiko', 'configparser'],
     classifiers = [
         'Framework :: IPython',
         'License :: OSI Approved :: Apache License 2.0',
