@@ -29,12 +29,16 @@ class ConfigManager:
     In dev environment, it will fallback to reading
     the config file
     """
-    config = configparser.RawConfigParser()
+    config = None
     homePath = None
     configPath = None
     profilesPath = None
 
-    def __init__(self):
+    def __init__(self, config_parser=None):
+        """
+        Initialize Configuration Manager
+        :param config_parser: mostly used for testing, enables passing an already configured config parser
+        """
         if os.environ["TOREE_GATEWAY_HOME"]:
             self.homePath = os.environ["TOREE_GATEWAY_HOME"]
             self.configPath = os.environ["TOREE_GATEWAY_HOME"] + '/conf'
@@ -44,7 +48,11 @@ class ConfigManager:
             self.configPath = self.homePath + '/conf'
             self.profilesPath = self.homePath + '/profiles'
 
-        self.config.read(self.configPath + '/toree-gateway.properties')
+        if config_parser is not None:
+            self.config = config_parser
+        else:
+            self.config = configparser.RawConfigParser()
+            self.config.read(self.configPath + '/toree-gateway.properties')
 
     def getHomeFolder(self):
         """
