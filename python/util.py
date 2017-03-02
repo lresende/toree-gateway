@@ -21,6 +21,16 @@ configManager = ConfigManager()
 isDebugging = configManager.get('gateway.debug') == 'True'
 
 def _clean_message(message):
+
+    if not isinstance(message, str):
+        if isinstance(message, bytes):
+            try:
+                message = message.decode()
+            except:
+                message = str(message)
+        else:
+            message = str(message)
+
     password_string = '''"password"'''
     quote_string = '''"'''
 
