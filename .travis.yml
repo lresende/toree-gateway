@@ -14,20 +14,16 @@
 # limitations under the License.
 #
 
-from setuptools import setup
+language: python
 
+python:
+  - "3.5"
+  - "3.6"
 
-setup(name='toree_gateway_kernel',
-    version='0.1',
-    description='Toree Gateway',
-    long_description='A Gateway Kernel for Apache Toree, based on MetaKernel',
-    py_modules=['toree_gateway_kernel'],
-    install_requires=['metakernel', 'paramiko', 'configparser'],
-    classifiers = [
-        'Framework :: IPython',
-        'License :: OSI Approved :: Apache License 2.0',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 2',
-        'Topic :: System :: Shells',
-    ]
-)
+install:
+  - pip install metakernel
+  - pip install paramiko
+  - pip install configparser
+
+script:
+  - pytest

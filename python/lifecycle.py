@@ -47,10 +47,6 @@ class LifecycleManager:
         """
         profilesFolder = self.configManager.getProfilesFolder()
         profile = None
-        """Lock mutext to avoid two processes to select same kernel config"""
-        # mutex = open(self.configManager.getProfilesFolder() + "/mutex")
-        # lock = fcntl.flock(mutex, fcntl.LOCK_EX)
-        # print(lock)
         """Select from the available kernel configurations"""
         for (path, dirs, files) in os.walk(profilesFolder):
             for folderName in dirs:
@@ -61,7 +57,6 @@ class LifecycleManager:
                 else:
                     profile = None
         """Unlock the mutex enabling other processes to select same kernel config"""
-        # fcntl.flock(self.mutex, fcntl.LOCK_UN)
 
         return profile
 
