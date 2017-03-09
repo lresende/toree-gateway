@@ -2,7 +2,7 @@
   "language_info": {
     "name": "scala"
   },
-  "display_name": "Toree Gateway Kernel",
+  "display_name": "Scala",
   "argv": [
     "python",
     "/opt/toree-gateway/python/toree_gateway_kernel.py",
