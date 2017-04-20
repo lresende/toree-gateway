@@ -19,6 +19,7 @@ from config import *
 
 configManager = ConfigManager()
 isDebugging = configManager.get('gateway.debug') == 'True'
+isTracing = configManager.get('gateway.trace', default='True') == 'True'
 
 def _clean_message(message):
 
@@ -53,3 +54,7 @@ def debug_print(message):
 def debug_pprint(message):
     if isDebugging:
         pprint(_clean_message(message))
+
+def trace_print(message):
+    if isTracing:
+        print(_clean_message(message))

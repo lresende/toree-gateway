@@ -20,6 +20,8 @@
 gateway.home=/opt/toree-gateway
 # enable debug mode for the toree gateway (valid values True/False)
 #gateway.debug=False
+# enable lifecycle management (start/stop remote toree)
+#gateway.lifecycle.enabled=true
 
 # the ip of the remote system where Toree will be running
 toree.ip=

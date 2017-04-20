@@ -114,9 +114,13 @@ class ToreeManager:
 
             pid = None
             for line in stdout:
+                debug_print(line)
                 pid = line.strip()
 
             debug_print('Toree started with pid: %s ' % pid)
+
+            for line in stderr:
+                debug_print(line)
 
             profile.updatePid(pid)
 

@@ -18,7 +18,7 @@ import time
 
 from wrappers import *
 from pprint import pprint
-from util import debug_print, debug_pprint
+from util import trace_print, debug_print, debug_pprint
 from jupyter_client import BlockingKernelClient
 
 try:
@@ -34,9 +34,11 @@ class ToreeClient:
         self.client.load_connection_file(connection_file=connectionFileLocation)
 
     def is_alive(self):
+        trace_print('__ToreClient.is_alive__')
         return self.client.is_alive()
 
     def is_ready(self):
+        trace_print('__ToreeClient.is_ready__')
         try:
             result = self.eval('1')
             if result == '1':
@@ -47,6 +49,7 @@ class ToreeClient:
             return False
 
     def wait_for_ready(self, timeout=TIMEOUT):
+        trace_print('__ToreeClient.wait_for_ready__')
         # Wait for initialization, by receiving an 'idle' message
         # Flush Shell channel
 
@@ -74,6 +77,7 @@ class ToreeClient:
 
 
     def eval(self, code, timeout=TIMEOUT):
+        trace_print('__ToreeClient.eval__')
 
         # Validate that remote kernel is available before submitting request
         if self.client.is_alive() == False:
@@ -134,7 +138,7 @@ class ToreeClient:
             # Stream results are being returned, accumulate them to results
             elif msg['msg_type'] == 'stream':
                 type = 'stream'
-                results.append(msg['content']['text'])
+                results.append(str(msg['content']['text']))
                 continue
 
             # Execute_Results are being returned:
@@ -144,10 +148,10 @@ class ToreeClient:
                 debug_print('Received results of type: %s ' % msg['content']['data'])
                 if 'text/plain' in msg['content']['data']:
                     type = 'text'
-                    results.append(msg['content']['data']['text/plain'])
+                    results.append(str(msg['content']['data']['text/plain']))
                 elif 'text/html' in msg['content']['data']:
                     type = 'html'
-                    results.append(msg['content']['data']['text/html'])
+                    results.append(str(msg['content']['data']['text/html']))
                 continue
 
             # When idle, responses have all been processed/returned

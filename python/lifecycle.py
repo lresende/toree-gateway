@@ -21,6 +21,7 @@ import time
 from config import *
 from toree_profile import *
 from toree_manager import *
+from util import trace_print, debug_print, debug_pprint
 
 class LifecycleManager:
     """
@@ -36,10 +37,12 @@ class LifecycleManager:
     toreeManager = None
 
     def __init__(self):
+        trace_print('__LifecycleManager.init__')
         self.configManager = ConfigManager()
         self.toreeManager = ToreeManager()
 
     def _reserve_profile(self):
+        trace_print('__LifecycleManager._reserve_profile__')
         """
         Tries to reserve an available toree slot
 
@@ -67,6 +70,7 @@ class LifecycleManager:
         :param profile: the Toree slot that was previously reserved
         :return: None
         """
+        trace_print('__LifecycleManager._release_profile__')
         profile.release()
 
     def start_toree(self):
@@ -79,10 +83,11 @@ class LifecycleManager:
         runtime error is thrown in case of no more available
         Toree slots.
         """
+        trace_print('__LifecycleManager.start_toree__')
         profile = self._reserve_profile()
-        if profile is None:
-            raise RuntimeError('No Toree slot available.')
-        self.toreeManager.start_toree(profile)
+        #if profile is None:
+        #    raise RuntimeError('No Toree slot available.')
+        #self.toreeManager.start_toree(profile)
 
         return profile
 
@@ -92,7 +97,8 @@ class LifecycleManager:
         :param profile: the toree slot that was previously reserved
         :return: None
         """
-        self.toreeManager.stop_toree(profile)
+        trace_print('__LifecycleManager.stop_profile__')
+        #self.toreeManager.stop_toree(profile)
         self._release_profile(profile)
 
 

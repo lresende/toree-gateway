@@ -98,9 +98,10 @@ def decode_password(encoded):
     else:
         return encoded
 
+def encode_authorization_header(username, password):
+    #we need to base 64 encode it
+    #and then decode it to acsii as python 3 stores it as a byte string
+    userAndPass = base64.b64encode(b"username:password").decode("ascii")
+    header = { 'Authorization' : 'Basic %s' %  userAndPass }
 
-"""
-print(decode_password('OBF:1v2j1uum1xtv1zej1zer1xtn1uvk1v1v'))
-print(decode_password('OBF:1xfx1vuf1x1b1x1b1vuv1xf5'))
-print(decode_password('B64:d2hvb3BpCg=='))
-"""
+    return header

@@ -26,7 +26,7 @@ from wrappers import *
 from lifecycle import *
 from toree_client import *
 from toree_profile import *
-from util import debug_print, debug_pprint
+from util import trace_print, debug_print, debug_pprint
 
 class ToreeGatewayKernel(MetaKernel):
     implementation = 'toree_gateway_kernel'
@@ -82,11 +82,15 @@ class ToreeGatewayKernel(MetaKernel):
         self._stop_toree()
 
     def _start_toree(self):
+        trace_print('__Kernel._start_toree__')
         self.toreeProfile = self.toreeLifecycleManager.start_toree()
+        trace_print('__Kernel._start_toree__ done')
 
     def _stop_toree(self):
+        trace_print('__Kernel._stop_toree__')
         self.toreeLifecycleManager.stop_toree(self.toreeProfile)
         self.toreeProfile = None
+        trace_print('__Kernel._stop_toree__ done')
 
     def Error(self, output):
         if not output:
@@ -106,13 +110,17 @@ class ToreeGatewayKernel(MetaKernel):
         MetaKernel code handler.
         """
 
+        trace_print('__Kernel._do_execute_direct__')
+
         if self.toreeProfile is None:
             debug_print('do_execute_direct: Not connected to a Toree instance')
             return 'Notebook is offline, due to no resource availability on the server. Please try again later or contact an Administrator'
 
+        """
         if not self.toreeClient.is_alive():
             debug_print('do_execute_direct: Kernel client is not alive')
             return 'Not connected to a Kernel'
+        """
 
         if code is None or code.strip() is None:
             return None
@@ -120,6 +128,7 @@ class ToreeGatewayKernel(MetaKernel):
         if not code.strip():
             return None
 
+        """
         if not self.isReady:
             retries = self.configManager.get_as_int('toree.initialization.retries', 3)
             retry_interval = self.configManager.get_as_int('toree.initialization.retry.interval', 5)
@@ -138,6 +147,7 @@ class ToreeGatewayKernel(MetaKernel):
 
             if not self.isReady:
                 return 'Kernel is not ready to process yet'
+        """
 
         debug_print('Evaluating: ' + code.strip())
 
